@@ -16,26 +16,37 @@ class FullyConnectedCuda:
 
     def forward(self, X):
         """
-        Forward pass using CUDA kernel for matrix multiplication.
+        Forward pass using CUDA kernel for fully connected layer.
         X: input array of shape (batch_size, input_dim)
         Returns: output array of shape (batch_size, output_dim)
         """
         import time
         t0 = time.time()
         # Call the CUDA kernel via pybind11 wrapper
-        out = self.deep_learning_cuda.matmul_f32(X.astype(np.float32), self.W.astype(np.float32))
-        # Add bias (broadcasting over batch)
-        out += self.b
+        out = self.deep_learning_cuda.fully_connected_forward(
+            X.astype(np.float32), 
+            self.W.astype(np.float32), 
+            self.b.astype(np.float32)
+        )
         elapsed = time.time() - t0
         self.X = X  # Cache input for backward
         return out, {'time': elapsed}
 
-    # Backward pass would require additional CUDA kernels for gradients
-    # For simplicity, implemented using numpy
     def backward(self, d_out):
-      t0 = time.time()
-      db = np.sum(d_out, axis=0, keepdims=True)
-      dW = np.matmul(self.X.T, d_out)
-      dX = np.matmul(d_out, self.W.T)
-      elapsed = time.time() - t0
-      return dX, dW, db, {'time': elapsed}
+        """
+        Backward pass using CUDA kernels for fully connected layer.
+        d_out: gradient of loss with respect to output, shape (batch_size, output_dim)
+        Returns:
+            dX: gradient w.r.t. input, shape (batch_size, input_dim)
+            dW: gradient w.r.t. weights, shape (input_dim, output_dim)
+            db: gradient w.r.t. biases, shape (1, output_dim)
+        """
+        t0 = time.time()
+        # Call the CUDA kernel via pybind11 wrapper
+        dX, dW, db = self.deep_learning_cuda.fully_connected_backward(
+            self.X.astype(np.float32),
+            d_out.astype(np.float32),
+            self.W.astype(np.float32)
+        )
+        elapsed = time.time() - t0
+        return dX, dW, db, {'time': elapsed}

@@ -26,7 +26,10 @@ pybind11_add_module(deep_learning_cuda
   kernels/module.cpp
   kernels/matmul_wrapper.cpp
   kernels/matmul.cu
-  # kernels/fully_connected_fw.cu
+  kernels/fully_connected_wrapper.cpp
+  kernels/fully_connected_launcher.cu
+  kernels/fully_connected_fw.cu
+  kernels/fully_connected_bw.cu
 )
 
 target_link_libraries(deep_learning_cuda PRIVATE CUDA::cudart)
