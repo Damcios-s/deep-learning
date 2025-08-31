@@ -19,7 +19,7 @@ class FullyConnected:
 		"""
 		self.X = X  # Cache input for backward pass
 		t0 = time.time()
-		out = np.dot(X, self.W) + self.b
+		out = np.matmul(X, self.W) + self.b
 		elapsed = time.time() - t0
 		return out, {'time': elapsed}
 
@@ -73,7 +73,7 @@ class FullyConnected:
 				- In matrix notation this translates to:
 
 						dL/dW = X^T * dL/dY
-						dW = np.dot(self.X.T, d_out)
+						dW = np.matmul(self.X.T, d_out)
 
 			dL/dX:
 				- The input X is multiplied by the weight matrix W. The output Y is 
@@ -88,7 +88,7 @@ class FullyConnected:
 				- In matrix notation this translates to:
 
 						dL/dX = dL/dY * W^T
-						dX = np.dot(d_out, self.W.T)
+						dX = np.matmul(d_out, self.W.T)
 
 		d_out: gradient of loss with respect to output, shape (batch_size, output_dim)
 		Returns:
@@ -98,7 +98,7 @@ class FullyConnected:
 		"""
 		t0 = time.time()
 		db = np.sum(d_out, axis=0, keepdims=True)
-		dW = np.dot(self.X.T, d_out)
-		dX = np.dot(d_out, self.W.T)
+		dW = np.matmul(self.X.T, d_out)
+		dX = np.matmul(d_out, self.W.T)
 		elapsed = time.time() - t0
 		return dX, dW, db, {'time': elapsed}

@@ -59,8 +59,8 @@ class Softmax:
     t0 = time.time()
     for i in range(batch_size):
       s_i = self.s[i].reshape(-1, 1)
-      jacobian = np.diagflat(s_i) - np.dot(s_i, s_i.T)
-      dz[i] = np.dot(jacobian, d_out[i])
+      jacobian = np.diagflat(s_i) - np.matmul(s_i, s_i.T)
+      dz[i] = np.matmul(jacobian, d_out[i])
     elapsed = time.time() - t0
     
     return dz, {'time': elapsed}
